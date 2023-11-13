@@ -1,0 +1,39 @@
+# EC2 Instance Setup for Web Browser Automation (for RHEL t2.medium)
+
+## Connect to Your EC2 Instance
+ssh -i /path/to/your-key-pair.pem ec2-user@your-instance-public-ip
+
+## Update Your System
+sudo dnf update -y
+
+## Install Node.js
+sudo dnf module install nodejs:12 -y
+
+## Create Project Directory
+mkdir web_automation && cd web_automation
+
+## Initialize Node.js Project
+npm init -y
+
+## Install Puppeteer
+npm install puppeteer
+
+## Create Puppeteer Script
+Create a file named getTitle.js and insert the following Puppeteer script:
+
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch({ 
+    headless: true, // "true" for headless mode
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+  const page = await browser.newPage();
+  await page.goto('https://valuationops.homegenius.com', { waitUntil: 'networkidle0' });
+  const title = await page.title();
+  console.log(`The title of the page is: ${title}`);
+  await browser.close();
+})();
+
+## Run the Puppeteer Script
+node getTitle.js
